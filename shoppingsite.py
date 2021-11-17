@@ -7,9 +7,12 @@ Authors: Joel Burton, Christian Fernandez, Meggie Mahnken, Katie Byers.
 """
 
 from flask import Flask, render_template, redirect, flash, session
+from flask_debugtoolbar import DebugToolbarExtension
 import jinja2
 
 import melons
+
+
 
 app = Flask(__name__)
 
@@ -24,13 +27,14 @@ app.jinja_env.undefined = jinja2.StrictUndefined
 
 # This configuration option makes the Flask interactive debugger
 # more useful (you should remove this line in production though)
+
 app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
 
 
 @app.route("/")
 def index():
     """Return homepage."""
-    
+
     return render_template("homepage.html")
 
 
@@ -100,6 +104,19 @@ def add_to_cart(melon_id):
     # - flash a success message
     # - redirect the user to the cart page
 
+    
+
+    if "cart" in session:
+        cart = session["cart"]
+
+    else:
+        cart = session["cart"]
+        session["cart"] = {}
+
+    cart[melon_id]=cart.get(melon_id,0)+1
+
+    flash("You have a melon in your cart!")
+
     return "Oops! This needs to be implemented!"
 
 
@@ -147,4 +164,11 @@ def checkout():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+    app.debug = True
+    DebugToolbarExtension(app)
+    app.run(host="0.0.0.0")
+    
+    
+    
+
+    
